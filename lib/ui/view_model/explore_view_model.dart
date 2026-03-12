@@ -11,14 +11,49 @@ class ExploreViewModel extends ChangeNotifier {
   String currentQuery = '';
   Stats stats = Stats(totalSpecies: 0, totalCountries: 0);
   String sortDirection = "asc";
+  int currentPage = 1;
+  final int pageSize = 20;
+  bool hasMore = true;
+  bool isLoading = false;
 
   ExploreViewModel({required this.repository}) {
     loadSpecies();
   }
   Future<void> loadSpecies() async {
-    speciesList = await repository.getAllSpecies();
-    filteredSpecies = speciesList;
-    stats = await repository.getStats();
+    currentPage = 1;
+    hasMore = true;
+    speciesList.clear();
+    // speciesList = await repository.getAllSpecies();
+    filteredSpecies.clear();
+    await fetchMoreData();
+    // stats = await repository.getStats();
+    // notifyListeners();
+  }
+
+  Future<void> fetchMoreData() async {
+    if (isLoading || !hasMore) return;
+    isLoading = true;
+    notifyListeners();
+
+    final newDate = await repository.filterSpecies(
+      currentQuery,
+      sortDirection,
+      page: currentPage,
+      limit: pageSize,
+    );
+    if (newDate.isEmpty) {
+      hasMore = false;
+    } else {
+      speciesList.addAll(newDate);
+      filteredSpecies = speciesList;
+      currentPage++;
+    }
+    stats = Stats(
+      totalSpecies: filteredSpecies.length,
+      totalCountries: filteredSpecies.map((s) => s.isoCode!).toSet().length,
+    );
+
+    isLoading = false;
     notifyListeners();
   }
 
@@ -56,8 +91,13 @@ class ExploreViewModel extends ChangeNotifier {
 
   void changeSort(String newDirection) async {
     sortDirection = newDirection;
-    await search(currentQuery);
-    filteredSpecies = speciesList;
-    notifyListeners();
+    currentPage = 1;
+    hasMore = true;
+    speciesList.clear();
+    filteredSpecies.clear();
+    // await search(currentQuery);
+    await fetchMoreData();
+    // filteredSpecies = speciesList;
+    // notifyListeners();
   }
 }

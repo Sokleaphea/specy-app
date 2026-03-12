@@ -42,7 +42,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   bool _initialized = false;
-  int _currentIndex = 2;
+  int _currentIndex = 1;
 
   final List<Widget> _pages = [HomeScreen(), ExploreScreen(), FavoriteScreen()];
 

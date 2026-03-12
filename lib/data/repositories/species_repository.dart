@@ -41,7 +41,10 @@ class SpeciesRepository {
 
   Future<List<Species>> filterSpecies(
     String query,
-    String sortDirection,
+    String sortDirection, {
+      int page = 1,
+      int limit = 20
+    }
   ) async {
     final url =
         "https://aes.shenlu.me/api/search?q=$query&sortDirection=$sortDirection";
