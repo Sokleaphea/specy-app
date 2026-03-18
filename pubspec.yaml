@@ -40,6 +40,8 @@ dependencies:
   url_launcher: ^6.3.2
   country_codes: ^3.3.0
   country_flags: ^4.1.2
+  flutter_native_splash: ^2.4.7
+  flutter_launcher_icons: ^0.14.4
 
 
 dev_dependencies:
@@ -57,8 +59,26 @@ dev_dependencies:
 # following page: https://dart.dev/tools/pub/pubspec
 
 # The following section is specific to Flutter packages.
+flutter_icons:
+    android: true
+    ios: true
+    image_path: "assets/app_assets/paw_logo.jpg"
+    
+# flutter_native_splash:
+#   color: "#ffffff"
+#   image: assets/app_assets/paw_splash_screen.png
+#   color_dark: "#000000"
+  
+#   # iOS Specifics
+#   ios_content_mode: center # Options: center, contain, stretch, cover
+#   ios: true # Ensures iOS code is generated
+  
+#   # Keep your existing Android settings below
+#   android_12:
+#     image: assets/app_assets/paw_splash_screen.png
+#     color: "#ffffff"
+#   fullscreen: true
 flutter:
-
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

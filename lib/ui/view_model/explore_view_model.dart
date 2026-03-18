@@ -35,17 +35,17 @@ class ExploreViewModel extends ChangeNotifier {
     isLoading = true;
     notifyListeners();
 
-    final newDate = await repository.filterSpecies(
+    final newData = await repository.filterSpecies(
       currentQuery,
       sortDirection,
       page: currentPage,
       limit: pageSize,
     );
-    if (newDate.isEmpty) {
+    if (newData.isEmpty) {
       hasMore = false;
     } else {
-      speciesList.addAll(newDate);
-      filteredSpecies = speciesList;
+      speciesList.addAll(newData);
+      filteredSpecies = List.from(speciesList);
       currentPage++;
     }
     stats = Stats(
@@ -78,15 +78,24 @@ class ExploreViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  // Future<void> search(String query) async {
+  //   currentQuery = query;
+  //   speciesList = await repository.filterSpecies(query, sortDirection);
+  //   filteredSpecies = speciesList;
+  //   stats = Stats(
+  //     totalSpecies: filteredSpecies.length,
+  //     totalCountries: filteredSpecies.map((s) => s.isoCode).toSet().length,
+  //   );
+  //   notifyListeners();
+  // }
   Future<void> search(String query) async {
     currentQuery = query;
-    speciesList = await repository.filterSpecies(query, sortDirection);
-    filteredSpecies = speciesList;
-    stats = Stats(
-      totalSpecies: filteredSpecies.length,
-      totalCountries: filteredSpecies.map((s) => s.isoCode).toSet().length,
-    );
-    notifyListeners();
+    currentPage = 1;
+    hasMore = true;
+    speciesList.clear;
+    filteredSpecies.clear();
+
+    await fetchMoreData();
   }
 
   void changeSort(String newDirection) async {

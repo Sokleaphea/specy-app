@@ -15,20 +15,16 @@ class ExploreScreen extends StatelessWidget {
 
     return Scaffold(
       body: SafeArea(
-        child: SingleChildScrollView(
+        child: Padding(
           padding: EdgeInsets.all(16),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              SizedBox(
-                child: SpeciesSearchBar(
-                  onSearch: (query) {
-                    final exploreVm = context.read<ExploreViewModel>();
-                    exploreVm.searchSpecies(query);
-                  },
-                ),
+              SpeciesSearchBar(
+                onSearch: (query) {
+                  context.read<ExploreViewModel>().search(query);
+                },
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -44,7 +40,7 @@ class ExploreScreen extends StatelessWidget {
                           style: TextStyle(color: Colors.red, fontSize: 20),
                         ),
                         TextSpan(
-                          text: "results.",
+                          text: "results",
                           style: TextStyle(color: Colors.black, fontSize: 20),
                         ),
                       ],
@@ -52,48 +48,65 @@ class ExploreScreen extends StatelessWidget {
                   ),
                   GestureDetector(
                     onTap: () {
-                      final newDirection = exploreVM.sortDirection == "desc"
+                      final newDirection = exploreVM.sortDirection == 'desc'
                           ? "asc"
                           : "desc";
                       exploreVM.changeSort(newDirection);
                     },
                     child: Transform.rotate(
-                      angle: exploreVM.sortDirection == "desc" ? 0 : 3.1416,
+                      angle: exploreVM.sortDirection == 'desc' ? 0 : 3.1416,
                       child: Icon(Icons.arrow_downward, size: 28),
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 16),
-              exploreVM.filteredSpecies.isEmpty
-                  ? const Center(child: CircularProgressIndicator())
-                  : Column(
-                      children: exploreVM.filteredSpecies.map((species) {
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 8.0),
-                          child: SpeciesTile(
-                            id: species.id ?? 0,
-                            scientificName: species.scientificName ?? "Unknown",
-                            commonName: species.commonName ?? "Unknown",
-                            countryName: getCountryName(species.isoCode ?? ''),
-                            countryEmoji: getCountryEmoji(
-                              species.isoCode ?? '',
-                            ),
-                            image: getSpeciesImage(species.id ?? 0),
-                            onCountryTap: () {
-                              openWikipedia(
-                                countryName: getCountryName(species.isoCode!),
-                              );
-                            },
-                            onSpeciesTap: () {
-                              openWikipedia(
-                                scientificName: species.scientificName,
-                              );
-                            },
-                          ),
-                        );
-                      }).toList(),
-                    ),
+              Expanded(
+                child: exploreVM.filteredSpecies.isEmpty && exploreVM.isLoading
+                    ? const Center(child: CircularProgressIndicator())
+                    : ListView.builder(
+                        itemCount:
+                            exploreVM.filteredSpecies.length +
+                            (exploreVM.hasMore ? 1 : 0),
+                        itemBuilder: (context, index) {
+                          if (index < exploreVM.filteredSpecies.length) {
+                            final species = exploreVM.filteredSpecies[index];
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 8),
+                              child: SpeciesTile(
+                                id: species.id ?? 0,
+                                scientificName:
+                                    species.scientificName ?? "Unknown",
+                                commonName: species.commonName ?? 'Unknown',
+                                countryName: getCountryName(
+                                  species.isoCode ?? '',
+                                ),
+                                countryEmoji: getCountryEmoji(
+                                  species.isoCode ?? '',
+                                ),
+                                image: getSpeciesImage(species.id ?? 0),
+                                onCountryTap: () {
+                                  openWikipedia(
+                                    countryName: getCountryName(
+                                      species.isoCode!,
+                                    ),
+                                  );
+                                },
+                                onSpeciesTap: () {
+                                  openWikipedia(
+                                    scientificName: species.scientificName,
+                                  );
+                                },
+                              ),
+                            );
+                          } else {
+                            return const Padding(
+                              padding: EdgeInsets.all(16),
+                              child: CircularProgressIndicator(),
+                            );
+                          }
+                        },
+                      ),
+              ),
             ],
           ),
         ),

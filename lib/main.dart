@@ -20,6 +20,7 @@ void main() async {
       providers: [
         ChangeNotifierProvider(
           create: (_) => HomeViewModel(repository: repository),
+          child: HomeScreen(),
         ),
         ChangeNotifierProvider(
           create: (_) => ExploreViewModel(repository: repository),
@@ -42,7 +43,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   bool _initialized = false;
-  int _currentIndex = 1;
+  int _currentIndex = 0;
 
   final List<Widget> _pages = [HomeScreen(), ExploreScreen(), FavoriteScreen()];
 
