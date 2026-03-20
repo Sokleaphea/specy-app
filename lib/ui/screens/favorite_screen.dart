@@ -13,70 +13,70 @@ class FavoriteScreen extends StatelessWidget {
     final favoriteVm = context.watch<FavoriteViewModel>();
     return Scaffold(
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: EdgeInsets.all(16),
-          child: favoriteVm.isLoading
-              ? const Center(child: CircularProgressIndicator())
-              : favoriteVm.favoriteSpeciesList.isEmpty
-              ? const Center(child: Text("No favorites yet"))
-              : Column(
-                  children: favoriteVm.favoriteSpeciesList.map((species) {
-                    return Dismissible(
-                      key: ValueKey(species.id),
-                      direction: DismissDirection.endToStart,
-                      background: Container(
-                        color: Colors.red,
-                        alignment: Alignment.center,
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child: const Icon(Icons.delete, color: Colors.white),
+        child: favoriteVm.isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : favoriteVm.favoriteSpecies.isEmpty
+            ? const Center(child: Text("No favorites yet"))
+            : ListView.builder(
+                padding: EdgeInsets.all(16),
+                itemCount: favoriteVm.favoriteSpeciesList.length,
+                itemBuilder: (context, index) {
+                  final species = favoriteVm.favoriteSpeciesList[index];
+                  return Dismissible(
+                    key: ValueKey(species.id),
+                    direction: DismissDirection.endToStart,
+                    background: Container(
+                      color: Colors.red,
+                      alignment: Alignment.center,
+                      child: const Icon(
+                        Icons.delete,
+                        color: Colors.white,
+                        size: 24,
                       ),
-                      onDismissed: (direction) {
-                        favoriteVm.removeFromFavorite(species.id!);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              "${species.commonName ?? 'Species'} removed",
-                            ),
-                            duration: const Duration(seconds: 2),
-                            action: SnackBarAction(
-                              label: "Undo",
-                              onPressed: () {
-                                favoriteVm.toggleFavorite(species.id!);
-                              },
-                            ),
+                    ),
+                    onDismissed: (direction) {
+                      favoriteVm.removeFromFavorite(species.id!);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            "${species.commonName ?? species} removed",
                           ),
-                        );
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: SpeciesTile(
-                          id: species.id ?? 0,
-                          scientificName: species.scientificName ?? 'Unknown',
-                          commonName: species.commonName ?? 'Unknown',
-                          countryName: species.isoCode != null
-                              ? getCountryName(species.isoCode!)
-                              : 'Unknown',
-                          countryEmoji: species.isoCode != null
-                              ? getCountryEmoji(species.isoCode!)
-                              : '',
-                          image: getSpeciesImage(species.id!),
-                          onCountryTap: () {
-                            openWikipedia(
-                              countryName: getCountryName(species.isoCode!),
-                            );
-                          },
-                          onSpeciesTap: () {
-                            openWikipedia(
-                              scientificName: species.scientificName,
-                            );
-                          },
+                          duration: Duration(seconds: 2),
+                          action: SnackBarAction(
+                            label: "Undo",
+                            onPressed: () {
+                              favoriteVm.toggleFavorite(species.id!);
+                            },
+                          ),
                         ),
+                      );
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: SpeciesTile(
+                        id: species.id ?? 0,
+                        scientificName: species.scientificName ?? 'Unknown',
+                        commonName: species.commonName ?? 'Unknown',
+                        countryName: species.isoCode != null
+                            ? getCountryName(species.isoCode!)
+                            : 'Unknown',
+                        countryEmoji: species.isoCode != null
+                            ? getCountryEmoji(species.isoCode!)
+                            : '',
+                        image: getSpeciesImage(species.id!),
+                        onCountryTap: () {
+                          openWikipedia(
+                            countryName: getCountryName(species.isoCode!),
+                          );
+                        },
+                        onSpeciesTap: () {
+                          openWikipedia(scientificName: species.scientificName);
+                        },
                       ),
-                    );
-                  }).toList(),
-                  // children: favoriteVm.favoriteSpeciesList.map((species) => {
-                ),
-        ),
+                    ),
+                  );
+                },
+              ),
       ),
     );
   }

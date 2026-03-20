@@ -12,12 +12,18 @@ class HomeViewModel extends ChangeNotifier {
   Stats stats = Stats(totalSpecies: 0, totalCountries: 0);
   Species? randomSpecies;
 
-  Timer? _timer;
-  bool _isLoading = false;
+  // Timer? _timer;
+  Timer? _refreshTimer;
+  // bool _isLoading = false;
+
+  final int refreshSecond = 10;
+  int remainingSeconds = 10;
 
   HomeViewModel({required this.repository}) {
     loadHomeData();
-    startAutoRefresh();
+    // startAutoRefresh();
+    // startCoundown();
+    startTimer();
   }
 
   Future<void> loadHomeData() async {
@@ -28,16 +34,22 @@ class HomeViewModel extends ChangeNotifier {
     randomSpecies = await randomSpeciesFuture;
     notifyListeners();
   }
-
-  void startAutoRefresh() {
-    _timer = Timer.periodic(const Duration(seconds: 10), (timer) async {
-      if (_isLoading) return;
-
-      _isLoading = true;
-      randomSpecies = await repository.getRandomSpecies();
-      _isLoading = false;
-      notifyListeners();
+  void startTimer() {
+    _refreshTimer?.cancel();
+    _refreshTimer = Timer.periodic(const Duration(seconds: 1), (_) async {
+      if (remainingSeconds > 0) {
+        remainingSeconds--;
+        notifyListeners();
+      } else {
+        randomSpecies = await repository.getRandomSpecies();
+        remainingSeconds = refreshSecond;
+        notifyListeners();
+      }
     });
+  }
+
+  void stopTimer() {
+    _refreshTimer?.cancel();
   }
 
   Map<int, bool> favorites = {};
@@ -53,7 +65,7 @@ class HomeViewModel extends ChangeNotifier {
 
   @override
   void dispose() {
-    _timer?.cancel();
+    _refreshTimer?.cancel();
     super.dispose();
   }
 }

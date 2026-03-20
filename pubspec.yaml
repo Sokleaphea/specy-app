@@ -64,20 +64,13 @@ flutter_icons:
     ios: true
     image_path: "assets/app_assets/paw_logo.jpg"
     
-# flutter_native_splash:
-#   color: "#ffffff"
-#   image: assets/app_assets/paw_splash_screen.png
-#   color_dark: "#000000"
-  
-#   # iOS Specifics
-#   ios_content_mode: center # Options: center, contain, stretch, cover
-#   ios: true # Ensures iOS code is generated
-  
-#   # Keep your existing Android settings below
-#   android_12:
-#     image: assets/app_assets/paw_splash_screen.png
-#     color: "#ffffff"
-#   fullscreen: true
+flutter_native_splash:
+  android: true
+  ios: true
+  ios_content_mode: scaleAspectFill
+  fullscreen: true
+  color: "#ffffff"       # background color
+  image: assets/app_assets/paw_splash_screen.png
 flutter:
 
   # The following line ensures that the Material Icons font is

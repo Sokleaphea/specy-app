@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:specy_app/core/utils/country.dart';
 import 'package:specy_app/core/utils/open_wikipedia.dart';
+import 'package:specy_app/core/utils/total_views.dart';
 import 'package:specy_app/ui/view_model/home_view_model.dart';
 import 'package:provider/provider.dart';
 import 'package:specy_app/ui/widgets/favorite_button.dart';
@@ -14,6 +15,21 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  late HomeViewModel homeVm;
+
+  @override
+  void initState() {
+    super.initState();
+    homeVm = context.read<HomeViewModel>();
+    homeVm.startTimer();
+  }
+
+  @override
+  void dispose() {
+    homeVm.stopTimer();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return const _HomeView();
@@ -84,7 +100,7 @@ class _HomeView extends StatelessWidget {
                     text: TextSpan(
                       children: [
                         TextSpan(
-                          text: "${homeVM.getTotalViews()} ",
+                          text: "${getTotalViews()} ",
                           style: TextStyle(color: Colors.red),
                         ),
                         TextSpan(
@@ -136,7 +152,8 @@ class _HomeView extends StatelessWidget {
                                     ),
                                   ),
                                   onTap: () {
-                                    final homeVm = context.read<HomeViewModel>();
+                                    final homeVm = context
+                                        .read<HomeViewModel>();
                                     homeVm.toggleFavorite(species.id!);
                                   },
                                 ),
@@ -176,6 +193,21 @@ class _HomeView extends StatelessWidget {
                       ],
                     ),
                   ),
+                  RichText(
+                    text: TextSpan(
+                      children: [
+                        TextSpan(
+                          text: "Next animal in: ",
+                          style: TextStyle(color: Colors.black, fontSize: 16)
+                        ),
+                        TextSpan(
+                          text: "${homeVM.remainingSeconds}",
+                          style: TextStyle(color: Colors.red)
+                        )
+                      ]
+                    )
+                  )
+                  // Text("Next animal in: ${homeVM.remainingSeconds}s"),
                 ],
               ),
             ],

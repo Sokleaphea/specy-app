@@ -12,7 +12,6 @@ class ExploreScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final exploreVM = context.watch<ExploreViewModel>();
-
     return Scaffold(
       body: SafeArea(
         child: Padding(
@@ -61,8 +60,10 @@ class ExploreScreen extends StatelessWidget {
                 ],
               ),
               Expanded(
-                child: exploreVM.filteredSpecies.isEmpty && exploreVM.isLoading
+                child: exploreVM.isLoading
                     ? const Center(child: CircularProgressIndicator())
+                    : exploreVM.filteredSpecies.isEmpty
+                    ? const Center(child: Text("No results"))
                     : ListView.builder(
                         itemCount:
                             exploreVM.filteredSpecies.length +
@@ -98,12 +99,7 @@ class ExploreScreen extends StatelessWidget {
                                 },
                               ),
                             );
-                          } else {
-                            return const Padding(
-                              padding: EdgeInsets.all(16),
-                              child: CircularProgressIndicator(),
-                            );
-                          }
+                          } 
                         },
                       ),
               ),
