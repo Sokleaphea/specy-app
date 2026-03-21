@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:percent_indicator/percent_indicator.dart';
 import 'package:specy_app/core/utils/country.dart';
 import 'package:specy_app/core/utils/open_wikipedia.dart';
-import 'package:specy_app/core/utils/total_views.dart';
 import 'package:specy_app/ui/view_model/home_view_model.dart';
 import 'package:provider/provider.dart';
 import 'package:specy_app/ui/widgets/favorite_button.dart';
@@ -14,30 +14,47 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen>
+    with SingleTickerProviderStateMixin {
   late HomeViewModel homeVm;
+  late AnimationController _controller;
 
   @override
   void initState() {
     super.initState();
     homeVm = context.read<HomeViewModel>();
-    homeVm.startTimer();
+    _controller = AnimationController(
+      vsync: this,
+      duration: Duration(seconds: 10),
+    );
+    _controller.addListener(() {
+      setState(() {});
+    });
+    _controller.addStatusListener((status) async {
+    if (status == AnimationStatus.completed) {
+      await homeVm.loadHomeData();
+      _controller.forward(from: 0);
+    }
+  });
+  
+  _controller.forward(from: 0);
   }
 
   @override
   void dispose() {
-    homeVm.stopTimer();
+    _controller.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return const _HomeView();
+    return _HomeView(controller: _controller,);
   }
 }
 
 class _HomeView extends StatelessWidget {
-  const _HomeView({super.key});
+  final AnimationController controller;
+  const _HomeView({required this.controller});
 
   @override
   Widget build(BuildContext context) {
@@ -100,7 +117,7 @@ class _HomeView extends StatelessWidget {
                     text: TextSpan(
                       children: [
                         TextSpan(
-                          text: "${getTotalViews()} ",
+                          text: "${homeVM.totalViews} ",
                           style: TextStyle(color: Colors.red),
                         ),
                         TextSpan(
@@ -123,7 +140,17 @@ class _HomeView extends StatelessWidget {
                       children: [
                         Stack(
                           clipBehavior: Clip.none,
+                          alignment: Alignment.center,
                           children: [
+                            CircularPercentIndicator(
+                              radius: 80,
+                              lineWidth: 8,
+                              percent: controller.value,
+                              progressColor: Colors.blue,
+                              backgroundColor: Colors.grey.shade300,
+                              circularStrokeCap: CircularStrokeCap.round,
+                              animation: false,
+                            ),
                             ClipOval(
                               child: Image.network(
                                 species.image!,
@@ -193,20 +220,20 @@ class _HomeView extends StatelessWidget {
                       ],
                     ),
                   ),
-                  RichText(
-                    text: TextSpan(
-                      children: [
-                        TextSpan(
-                          text: "Next animal in: ",
-                          style: TextStyle(color: Colors.black, fontSize: 16)
-                        ),
-                        TextSpan(
-                          text: "${homeVM.remainingSeconds}",
-                          style: TextStyle(color: Colors.red)
-                        )
-                      ]
-                    )
-                  )
+                  // RichText(
+                  //   text: TextSpan(
+                  //     children: [
+                  //       TextSpan(
+                  //         text: "Next animal in: ",
+                  //         style: TextStyle(color: Colors.black, fontSize: 16),
+                  //       ),
+                  //       TextSpan(
+                  //         text: "${homeVM.remainingSeconds}",
+                  //         style: TextStyle(color: Colors.red),
+                  //       ),
+                  //     ],
+                  //   ),
+                  // ),
                   // Text("Next animal in: ${homeVM.remainingSeconds}s"),
                 ],
               ),

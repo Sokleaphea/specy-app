@@ -55,9 +55,6 @@ class ExploreViewModel extends ChangeNotifier {
   }
 
   Future<void> search(String query) async {
-    if (query.isEmpty) {
-      await loadSpecies();
-    }
     currentQuery = query;
     currentPage = 1;
     hasMore = true;

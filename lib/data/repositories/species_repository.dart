@@ -20,17 +20,6 @@ class SpeciesRepository {
   }
 
   Future<Stats> getStats() async {
-    // final allStats = await Future.wait([
-    //   apiService.get("/v1/countrycount"),
-    //   apiService.get("/v1/speciescount"),
-    //   apiService.get("/v1/viewsCount"),
-    // ]);
-    // print(allStats);
-    // return Stats.fromJson(
-    //   speciesJson: allStats[0],
-    //   countriesJson: allStats[1],
-    //   viewsJson: allStats[2],
-    // );
     final countriesJson = await apiService.get("/v1/countrycount");
     final speciesJson = await apiService.get("/v1/speciescount");
     return Stats.fromJson(

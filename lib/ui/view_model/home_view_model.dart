@@ -18,12 +18,10 @@ class HomeViewModel extends ChangeNotifier {
 
   final int refreshSecond = 10;
   int remainingSeconds = 10;
+  int? totalViews = 0;
 
   HomeViewModel({required this.repository}) {
     loadHomeData();
-    // startAutoRefresh();
-    // startCoundown();
-    startTimer();
   }
 
   Future<void> loadHomeData() async {
@@ -32,25 +30,27 @@ class HomeViewModel extends ChangeNotifier {
 
     stats = await statsFuture;
     randomSpecies = await randomSpeciesFuture;
+    totalViews = 100 + Random().nextInt(10000);
     notifyListeners();
   }
-  void startTimer() {
-    _refreshTimer?.cancel();
-    _refreshTimer = Timer.periodic(const Duration(seconds: 1), (_) async {
-      if (remainingSeconds > 0) {
-        remainingSeconds--;
-        notifyListeners();
-      } else {
-        randomSpecies = await repository.getRandomSpecies();
-        remainingSeconds = refreshSecond;
-        notifyListeners();
-      }
-    });
-  }
 
-  void stopTimer() {
-    _refreshTimer?.cancel();
-  }
+  // void startTimer() {
+  //   _refreshTimer?.cancel();
+  //   _refreshTimer = Timer.periodic(const Duration(seconds: 1), (_) async {
+  //     if (remainingSeconds > 0) {
+  //       remainingSeconds--;
+  //       notifyListeners();
+  //     } else {
+  //       randomSpecies = await repository.getRandomSpecies();
+  //       remainingSeconds = refreshSecond;
+  //       notifyListeners();
+  //     }
+  //   });
+  // }
+
+  // void stopTimer() {
+  //   _refreshTimer?.cancel();
+  // }
 
   Map<int, bool> favorites = {};
   void toggleFavorite(int speciesId) {
@@ -58,10 +58,14 @@ class HomeViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  int getTotalViews() {
-    final random = Random();
-    return 100 + random.nextInt(100000);
+  double get progressPercentage {
+    return 1 - (remainingSeconds / refreshSecond);
   }
+
+  // int getTotalViews() {
+  //   final random = Random();
+  //   return 100 + random.nextInt(100000);
+  // }
 
   @override
   void dispose() {
