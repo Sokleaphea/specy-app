@@ -63,7 +63,7 @@ class ExploreScreen extends StatelessWidget {
                 child: exploreVM.isLoading
                     ? const Center(child: CircularProgressIndicator())
                     : exploreVM.filteredSpecies.isEmpty
-                    ? const Center(child: Text("No results"))
+                    ? Center(child: Text("No endemic species found for \"${exploreVM.currentQuery}\""))
                     : ListView.builder(
                         itemCount:
                             exploreVM.filteredSpecies.length +

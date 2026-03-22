@@ -59,6 +59,7 @@ class ExploreViewModel extends ChangeNotifier {
     currentPage = 1;
     hasMore = true;
     speciesList.clear();
+    filteredSpecies.clear();
     await fetchMoreData();
   }
 

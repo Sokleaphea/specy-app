@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:math';
-
 import 'package:flutter/cupertino.dart';
 import 'package:specy_app/data/models/species.dart';
 import 'package:specy_app/data/models/stats.dart';
@@ -13,7 +12,7 @@ class HomeViewModel extends ChangeNotifier {
   Species? randomSpecies;
 
   // Timer? _timer;
-  Timer? _refreshTimer;
+  // Timer? _refreshTimer;
   // bool _isLoading = false;
 
   final int refreshSecond = 10;
@@ -21,6 +20,7 @@ class HomeViewModel extends ChangeNotifier {
   int? totalViews = 0;
 
   HomeViewModel({required this.repository}) {
+    totalViews = 100 + Random().nextInt(10000).floor();
     loadHomeData();
   }
 
@@ -30,7 +30,6 @@ class HomeViewModel extends ChangeNotifier {
 
     stats = await statsFuture;
     randomSpecies = await randomSpeciesFuture;
-    totalViews = 100 + Random().nextInt(10000);
     notifyListeners();
   }
 
@@ -56,20 +55,5 @@ class HomeViewModel extends ChangeNotifier {
   void toggleFavorite(int speciesId) {
     favorites[speciesId] = !(favorites[speciesId] ?? false);
     notifyListeners();
-  }
-
-  double get progressPercentage {
-    return 1 - (remainingSeconds / refreshSecond);
-  }
-
-  // int getTotalViews() {
-  //   final random = Random();
-  //   return 100 + random.nextInt(100000);
-  // }
-
-  @override
-  void dispose() {
-    _refreshTimer?.cancel();
-    super.dispose();
   }
 }

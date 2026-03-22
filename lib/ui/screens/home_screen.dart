@@ -31,13 +31,12 @@ class _HomeScreenState extends State<HomeScreen>
       setState(() {});
     });
     _controller.addStatusListener((status) async {
-    if (status == AnimationStatus.completed) {
-      await homeVm.loadHomeData();
-      _controller.forward(from: 0);
-    }
-  });
-  
-  _controller.forward(from: 0);
+      if (status == AnimationStatus.completed) {
+        await homeVm.loadHomeData();
+        _controller.forward(from: 0);
+      }
+    });
+    _controller.forward(from: 0);
   }
 
   @override
@@ -48,7 +47,7 @@ class _HomeScreenState extends State<HomeScreen>
 
   @override
   Widget build(BuildContext context) {
-    return _HomeView(controller: _controller,);
+    return _HomeView(controller: _controller);
   }
 }
 
@@ -146,7 +145,7 @@ class _HomeView extends StatelessWidget {
                               radius: 80,
                               lineWidth: 8,
                               percent: controller.value,
-                              progressColor: Colors.blue,
+                              progressColor: Colors.greenAccent,
                               backgroundColor: Colors.grey.shade300,
                               circularStrokeCap: CircularStrokeCap.round,
                               animation: false,
